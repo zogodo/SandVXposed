@@ -7,7 +7,4 @@
 .DS_Store
 /build
 /captures
-gradlew.bat
-gradlew
-gradle/
 

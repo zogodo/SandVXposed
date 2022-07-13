@@ -29,6 +29,7 @@ android {
     lintOptions {
         //IJobService need NewApi
         warning 'NewApi','OnClick'
+        abortOnError false
     }
 }
 
