@@ -6,6 +6,13 @@ functional 是最新分支，但是代码不全
 
 反编译 [svxp64_210531_tissot.apk](https://github.com/asLody/SandVXposed/releases/download/V2.1.4/svxp64_210531_tissot.apk) 看到有混淆
 
+|            | minSdkVersion | targetSdkVersion |
+| :--------: | :-----------: | :--------------: |
+|   master   |   19 (4.4)    |     25 (7.1)     |
+| functional |   21 (5.0)    |     28 (9.0)     |
+
+
+
 # 编译 master 分支
 
 ## 各种版本
