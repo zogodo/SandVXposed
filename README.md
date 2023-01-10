@@ -28,9 +28,9 @@ XPrivacyLua
 
 # ScreenShot
 
-![art1.jpg](art/art2.jpg)
+![art1.jpg](doc/art2.jpg)
 
-![art2.jpg](art/art1.jpg)
+![art2.jpg](doc/art1.jpg)
 
 # SandHook
 https://github.com/ganyao114/SandHook
