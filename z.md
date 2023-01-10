@@ -1,15 +1,17 @@
 # 说明
 
-master 分支能用，但是只支持到安卓7
+master 分支能用，但是只支持到安卓7.1
 
 functional 是最新分支，但是代码不全
 
 反编译 [svxp64_210531_tissot.apk](https://github.com/asLody/SandVXposed/releases/download/V2.1.4/svxp64_210531_tissot.apk) 看到有混淆
 
-|            | minSdkVersion | targetSdkVersion |
-| :--------: | :-----------: | :--------------: |
-|   master   |   19 (4.4)    |     25 (7.1)     |
-| functional |   21 (5.0)    |     28 (9.0)     |
+|     branch     | minSdkVersion | targetSdkVersion | compileSdkVersion |
+| :------------: | :-----------: | :--------------: | :---------------: |
+|   app:master   |   19 (4.4)    |     25 (7.1)     |     30 (11.0)     |
+|   lib:master   |   19 (4.4)    |     25 (7.1)     |     30 (11.0)     |
+| app:functional |   21 (5.0)    |     28 (9.0)     | android-S (12.0)  |
+| lib:functional |   19 (4.4)    |    29 (10.0)     | android-S (12.0)  |
 
 
 
@@ -27,7 +29,7 @@ cd /path/to/SandVXposed/
 gradlew.bat build
 ```
 
-这样编译出来可以在【小米note1(魔趣)】上运行成功
+这样编译出来可以在【小米note1(魔趣-Android7.1)】【MotoX1(魔趣-Android5.1)】上运行成功
 
 # P说
 
