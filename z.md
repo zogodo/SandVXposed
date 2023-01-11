@@ -22,7 +22,7 @@ functional 是最新分支，但是代码不全
 - Android Studio 3.6.1
 - Gradle 5.6.4
 - JDK 1.8
-- NDK 21.4
+- NDK 21.4 或 25.0(自己下载?)
 
 ```sh
 cd /path/to/SandVXposed/
