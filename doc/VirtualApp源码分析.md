@@ -1,6 +1,9 @@
 最近发现了一个非常好的开源项目，基本实现了一个 Android 上的沙箱环境，不过应用场景最多的还是应用双开。
-VA [github](https://so.csdn.net/so/search?q=github&spm=1001.2101.3001.7020): https://github.com/asLody/VirtualApp
-VA 的源码注释: https://github.com/ganyao114/VA_Doc
+
+[VA github]: https://github.com/asLody/VirtualApp
+
+[VA 的源码注释]: https://github.com/ganyao114/VA_Doc
+
 第一章主要是分析一下项目的整体结构。
 
 # 1 包结构
@@ -9,7 +12,7 @@ VA 的源码注释: https://github.com/ganyao114/VA_Doc
 
 ## android.content
 
-主要是 PackageParser,该类型覆盖了系统的隐藏类 android.content.pm.PackageParser
+主要是 PackageParser, 该类型覆盖了系统的隐藏类 android.content.pm.PackageParser
 
 ## com.lody.virtual
 
@@ -17,7 +20,7 @@ VA 的源码注释: https://github.com/ganyao114/VA_Doc
 
 ### client
 
-运行在客户端的代码，指加载到 VA 中的子程序在被 VA 代理(hook)之后,所运行的代码
+运行在客户端的代码，指加载到 VA 中的子程序在被 VA 代理(hook)之后, 所运行的代码
 
 #### hook
 
@@ -25,7 +28,7 @@ hook java 层函数的一些代码
 
 #### ipc
 
-伪造的一些 framework 层的 IPC 服务类，诸如 ActivityManager,ServiceManager 等等，使用 VXXXXX 命名。hook 之后，子程序就会运行到这里而·不是原来真正的系统 framework 代码。
+伪造的一些 framework 层的 IPC 服务类，诸如 ActivityManager, ServiceManager 等等，使用 VXXXXX 命名。hook 之后，子程序就会运行到这里而·不是原来真正的系统 framework 代码。
 
 #### stub
 
@@ -37,7 +40,7 @@ hook java 层函数的一些代码
 
 ### server
 
-server 端代码，VA 伪造了一套 framework 层系统 service 的代码，他在一个独立的服务中记录管理组件的各种 Recorder，其逻辑其实与系统原生的相近，通过 Binder 与 client 端的 ipc 包中的 VXXXXManager 通讯。诸如 AMS(VAMS),PMS(VPMS)。
+server 端代码，VA 伪造了一套 framework 层系统 service 的代码，他在一个独立的服务中记录管理组件的各种 Recorder，其逻辑其实与系统原生的相近，通过 Binder 与 client 端的 ipc 包中的 VXXXXManager 通讯。诸如 AMS(VAMS), PMS(VPMS)。
 
 ## mirror
 
@@ -126,7 +129,7 @@ public static Class load(Class mappingClass, Class<?> realClass) {
     }
 ```
 
-最后调用的话 MirrorClass.mirrorField.get(instance),MirrorClass.mirrorField.set(instance),就相当于直接调用 framework 层的隐藏字段了。
+最后调用的话 MirrorClass.mirrorField.get(instance), MirrorClass.mirrorField.set(instance), 就相当于直接调用 framework 层的隐藏字段了。
 
 ### Method 映射
 
@@ -793,7 +796,7 @@ Hook 的方法就是用我们动态代理生成的代理类对象替换系统原
 这个函数需要注意以下几点：
 1. VA 有意将安装和卸载 APP 的请求重定向到了卸载 VA 内部 APK 的逻辑。
 2. resolveActivityInfo 调用到了 VPM 的 resolveIntent，最终会远程调用到 VPMS 的 resolveIntent，然后 VPMS 就会去查询 VPackage 找到目标 Activity 并将信息附加在 ResolveInfo 中返回 VPM。
-3. 最后也是最重要的一点，startActivity 会调用到 VAM.startActivity,同样最终会远程调用到 VAMS 的 startActivity。
+3. 最后也是最重要的一点，startActivity 会调用到 VAM.startActivity, 同样最终会远程调用到 VAMS 的 startActivity。
 
 ```java
 // Hook startActivity
@@ -1161,7 +1164,7 @@ public class StubActivityRecord  {
         ProcessRecord targetApp = mService.startProcessIfNeedLocked(info.processName, userId, info.packageName);
 ```
 
-这里会先去找对应 Client App 进程的 ProcessRecorder,找不到代表 Application 刚启动尚未初始化:
+这里会先去找对应 Client App 进程的 ProcessRecorder, 找不到代表 Application 刚启动尚未初始化:
 
 ```java
 private ProcessRecord performStartProcessLocked(int vuid, int vpid, ApplicationInfo info, String processName) {
@@ -1201,7 +1204,7 @@ ProviderCall.call 向 Client App 的 StubContentProvider 发起远程调用：
         if (lock != null) {
             lock.block();
         }
-        IBinder token = BundleCompat.getBinder(extras,"_VA_|_binder_");
+        IBinder token = BundleCompat.getBinder(extras, "_VA_|_binder_");
         int vuid = extras.getInt("_VA_|_vuid_");
         VClientImpl client = VClientImpl.get();
         client.initProcess(token, vuid);
@@ -1665,7 +1668,7 @@ static class StartService extends MethodProxy {
                 return method.invoke(who, args);
             }
             int userId = VUserHandle.myUserId();
-            // 如果是内部请求,获取原来的 Service
+            // 如果是内部请求, 获取原来的 Service
             if (service.getBooleanExtra("_VA_|_from_inner_", false)) {
                 userId = service.getIntExtra("_VA_|_user_id_", userId);
                 service = service.getParcelableExtra("_VA_|_intent_");
@@ -2164,7 +2167,7 @@ public class StubContentProvider extends ContentProvider {
         if (lock != null) {
             lock.block();
         }
-        IBinder token = BundleCompat.getBinder(extras,"_VA_|_binder_");
+        IBinder token = BundleCompat.getBinder(extras, "_VA_|_binder_");
         int vuid = extras.getInt("_VA_|_vuid_");
         VClientImpl client = VClientImpl.get();
         client.initProcess(token, vuid);
