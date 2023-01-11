@@ -5,7 +5,7 @@ VA 的源码注释: https://github.com/ganyao114/VA_Doc
 
 # 1 包结构
 
-![这里写图片描述](D:\code\SandVXposed\doc\csdn1.png)
+![csdn.jpg](https://raw.githubusercontent.com/zogodo/SandVXposed/master/doc/csdn1.png)
 
 ## android.content
 
@@ -269,14 +269,14 @@ VA 参照原生系统 framework 仿造了一套 framework service，还有配套
    简单来说，我们平时所用到的 app 运行空间中的 framework api 最终会通过 Binder 远程调用到 framework service 空间的远程服务。
    而远程服务类似 AMS 中的 Recoder 中会持有 app 空间的 Ibinder token 句柄，通过 token 也可以让 framework service 远程调用到 app 空间。
 
-   ![这里写图片描述](D:\code\SandVXposed\doc\csdn2.png)
+   ![csdn.jpg](https://raw.githubusercontent.com/zogodo/SandVXposed/master/doc/csdn2.png)
 
 2. VA 环境下：
    而在 VA 环境下，情况其实也是类似，只不过在 framework service 和 client app 之间还有另外一个 VA 实现的 VAService，VAService 仿造了 framework service 的一些功能。
    因为在 VA 中运行的 Client App 都是没有(也不能注册)在 framework service 的，注册的只有 VA 预先注册在 Menifest 中的 Stub 而已。所以 frameservice 是无法像普通 App 一样管理 VA Client App 的会话的。
    这就要依靠 VA 仿造的另外一套 VAService 完成对 VA 中 Client App 的会话管理了。
 
-   ![这里写图片描述](D:\code\SandVXposed\doc\csdn3.png)
+   ![csdn.jpg](https://raw.githubusercontent.com/zogodo/SandVXposed/master/doc/csdn3.png)
 
    需要注意的是 VA Client 获取 VA Service 的 IBinder 句柄是统一通过 IServiceFetcher 这个句柄，这个看上去有些奇怪。而获得 IServiceFetcher 本身的方式是通过 ContentProvider，可能是 Provider call 的性能较好一些。
 
@@ -599,7 +599,7 @@ public class VPackage implements Parcelable {
 
 首先，VAService 是指 VA 仿造 Android 原生 framework 层 Service 实现的一套副本，举例有 VActivityManagerService，它和系统 AMS 一样，只不过他管理的是 VA 内部 Client App 的组件会话。
 
-![这里写图片描述](D:\code\SandVXposed\doc\csdn4.png)
+![csdn.jpg](https://raw.githubusercontent.com/zogodo/SandVXposed/master/doc/csdn4.png)
 
 ## VAService 统一管理
 
