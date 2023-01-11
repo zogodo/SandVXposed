@@ -11,7 +11,7 @@ VA 的源码注释: https://github.com/ganyao114/VA_Doc
 
 主要是 PackageParser,该类型覆盖了系统的隐藏类 android.content.pm.PackageParser
 
-## com.lody.[virtual](https://so.csdn.net/so/search?q=virtual&spm=1001.2101.3001.7020)
+## com.lody.virtual
 
 这里就是框架的主体代码了
 
