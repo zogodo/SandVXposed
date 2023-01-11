@@ -55,12 +55,13 @@ public class VActivityManager {
 
 
     public int startActivity(Intent intent, ActivityInfo info, IBinder resultTo, Bundle options, String resultWho, int requestCode, int userId) {
-        Log.e("zzz", "411");
+        Log.e("zzz4", "11");
         try {
-            Log.e("zzz", "412");
+            //IActivityManager iam = getService();
+            Log.e("zzz4", "12 " + intent.toString());
             return getService().startActivity(intent, info, resultTo, options, resultWho, requestCode, userId);
         } catch (RemoteException e) {
-            Log.e("zzz", "413");
+            Log.e("zzz4", "13");
             return VirtualRuntime.crash(e);
         }
     }
@@ -74,7 +75,7 @@ public class VActivityManager {
     }
 
     public int startActivity(Intent intent, int userId) {
-        Log.e("zzz", "421");
+        Log.e("zzz4", "21");
         if (userId < 0) {
             return ActivityManagerCompat.START_NOT_CURRENT_USER_ACTIVITY;
         }

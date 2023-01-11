@@ -268,7 +268,7 @@ import static android.content.pm.ActivityInfo.LAUNCH_SINGLE_TOP;
 
     int startActivityLocked(int userId, Intent intent, ActivityInfo info, IBinder resultTo, Bundle options,
                             String resultWho, int requestCode) {
-        Log.e("zzz", "51");
+        Log.e("zzz5", "1");
         optimizeTasksLocked();
 
         Intent destIntent;
@@ -279,39 +279,51 @@ import static android.content.pm.ActivityInfo.LAUNCH_SINGLE_TOP;
         ClearTarget clearTarget = ClearTarget.NOTHING;
         boolean clearTop = containFlags(intent, Intent.FLAG_ACTIVITY_CLEAR_TOP);
         boolean clearTask = containFlags(intent, Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        Log.e("zzz5", "3");
 
         if (intent.getComponent() == null) {
+            Log.e("zzz5", "4");
             intent.setComponent(new ComponentName(info.packageName, info.name));
         }
         if (sourceRecord != null && sourceRecord.launchMode == LAUNCH_SINGLE_INSTANCE) {
+            Log.e("zzz5", "5");
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         }
         if (clearTop) {
+            Log.e("zzz5", "2");
             removeFlags(intent, Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             clearTarget = ClearTarget.TOP;
         }
         if (clearTask) {
+            Log.e("zzz5", "6");
             if (containFlags(intent, Intent.FLAG_ACTIVITY_NEW_TASK)) {
+                Log.e("zzz5", "7");
                 clearTarget = ClearTarget.TASK;
             } else {
+                Log.e("zzz5", "8");
                 removeFlags(intent, Intent.FLAG_ACTIVITY_CLEAR_TASK);
             }
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Log.e("zzz5", "9");
             switch (info.documentLaunchMode) {
                 case ActivityInfo.DOCUMENT_LAUNCH_INTO_EXISTING:
+                    Log.e("zzz5", "a");
                     clearTarget = ClearTarget.TASK;
                     reuseTarget = ReuseTarget.DOCUMENT;
                     break;
                 case ActivityInfo.DOCUMENT_LAUNCH_ALWAYS:
+                    Log.e("zzz5", "2");
                     reuseTarget = ReuseTarget.MULTIPLE;
                     break;
             }
         }
         boolean singleTop = false;
+        Log.e("zzz5", "b");
 
         switch (info.launchMode) {
             case LAUNCH_SINGLE_TOP: {
+                Log.e("zzz5", "c");
                 singleTop = true;
                 if (containFlags(intent, Intent.FLAG_ACTIVITY_NEW_TASK)) {
                     reuseTarget = containFlags(intent, Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
@@ -321,6 +333,7 @@ import static android.content.pm.ActivityInfo.LAUNCH_SINGLE_TOP;
             }
             break;
             case LAUNCH_SINGLE_TASK: {
+                Log.e("zzz5", "d");
                 clearTop = false;
                 clearTarget = ClearTarget.TOP;
                 reuseTarget = containFlags(intent, Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
@@ -329,6 +342,7 @@ import static android.content.pm.ActivityInfo.LAUNCH_SINGLE_TOP;
             }
             break;
             case LAUNCH_SINGLE_INSTANCE: {
+                Log.e("zzz5", "e");
                 clearTop = false;
                 clearTarget = ClearTarget.TOP;
                 reuseTarget = ReuseTarget.AFFINITY;
@@ -336,6 +350,7 @@ import static android.content.pm.ActivityInfo.LAUNCH_SINGLE_TOP;
             break;
             default: {
                 if (containFlags(intent, Intent.FLAG_ACTIVITY_SINGLE_TOP)) {
+                    Log.e("zzz5", "f");
                     singleTop = true;
                 }
             }
@@ -347,6 +362,7 @@ import static android.content.pm.ActivityInfo.LAUNCH_SINGLE_TOP;
             }
         }
         if (sourceTask == null && reuseTarget == ReuseTarget.CURRENT) {
+            Log.e("zzz5", "g");
             reuseTarget = ReuseTarget.AFFINITY;
         }
 
@@ -354,72 +370,93 @@ import static android.content.pm.ActivityInfo.LAUNCH_SINGLE_TOP;
         TaskRecord reuseTask = null;
         switch (reuseTarget) {
             case AFFINITY:
+                Log.e("zzz5", "h");
                 reuseTask = findTaskByAffinityLocked(userId, affinity);
                 break;
             case DOCUMENT:
+                Log.e("zzz5", "i");
                 reuseTask = findTaskByIntentLocked(userId, intent);
                 break;
             case CURRENT:
+                Log.e("zzz5", "j");
                 reuseTask = sourceTask;
                 break;
             default:
                 break;
         }
 
+        Log.e("zzz5", "k");
         boolean taskMarked = false;
         if (reuseTask == null) {
+            Log.e("zzz5", "l");
             startActivityInNewTaskLocked(userId, intent, info, options);
         } else {
+            Log.e("zzz5", "m");
             boolean delivered = false;
             mAM.moveTaskToFront(reuseTask.taskId, 0);
             boolean startTaskToFront = !clearTask && !clearTop && ComponentUtils.isSameIntent(intent, reuseTask.taskRoot);
 
             if (clearTarget.deliverIntent || singleTop) {
+                Log.e("zzz5", "n");
                 taskMarked = markTaskByClearTarget(reuseTask, clearTarget, intent.getComponent());
                 ActivityRecord topRecord = topActivityInTask(reuseTask);
                 if (clearTop && !singleTop && topRecord != null && taskMarked) {
+                    Log.e("zzz5", "o");
                     topRecord.marked = true;
                 }
                 // Target activity is on top
                 if (topRecord != null && !topRecord.marked && topRecord.component.equals(intent.getComponent())) {
+                    Log.e("zzz5", "p");
                     deliverNewIntentLocked(sourceRecord, topRecord, intent);
                     delivered = true;
                 }
             }
+            Log.e("zzz5", "q");
             if (taskMarked) {
+                Log.e("zzz5", "r");
                 synchronized (mHistory) {
+                    Log.e("zzz5", "s");
                     scheduleFinishMarkedActivityLocked();
                 }
             }
             if (!startTaskToFront) {
+                Log.e("zzz5", "t");
                 if (!delivered) {
+                    Log.e("zzz5", "u");
                     destIntent = startActivityProcess(userId, sourceRecord, intent, info);
                     if (destIntent != null) {
                         startActivityFromSourceTask(reuseTask, destIntent, info, resultWho, requestCode, options);
                     }
                 }
             }
+            Log.e("zzz5", "v");
         }
         return 0;
     }
 
     private void startActivityInNewTaskLocked(int userId, Intent intent, ActivityInfo info, Bundle options) {
+        Log.e("zzz6", "1");
         Intent destIntent = startActivityProcess(userId, null, intent, info);
         if (destIntent != null) {
+            Log.e("zzz6", "2");
             destIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             destIntent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
             destIntent.addFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
 
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
                 // noinspection deprecation
+                Log.e("zzz6", "3");
                 destIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
             } else {
+                Log.e("zzz6", "4");
                 destIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
             }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                Log.e("zzz6", "5");
                 VirtualCore.get().getContext().startActivity(destIntent, options);
             } else {
+                Log.e("zzz6", "6");
                 VirtualCore.get().getContext().startActivity(destIntent);
             }
         }

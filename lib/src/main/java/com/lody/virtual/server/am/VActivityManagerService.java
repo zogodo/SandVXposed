@@ -130,7 +130,7 @@ public class VActivityManagerService implements IActivityManager {
 
     @Override
     public int startActivity(Intent intent, ActivityInfo info, IBinder resultTo, Bundle options, String resultWho, int requestCode, int userId) {
-        Log.e("zzz4 3", "xxx1");
+        Log.e("zzz4", "31");
         synchronized (this) {
             return mMainStack.startActivityLocked(userId, intent, info, resultTo, options, resultWho, requestCode);
         }

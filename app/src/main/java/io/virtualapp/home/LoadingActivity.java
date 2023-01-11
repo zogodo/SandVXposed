@@ -33,10 +33,10 @@ public class LoadingActivity extends VActivity {
     private EatBeansView loadingView;
 
     public static void launch(Context context, String packageName, int userId) {
-        Log.e("zzz", "21");
+        Log.e("zzz2", "1");
         Intent intent = VirtualCore.get().getLaunchIntent(packageName, userId);
         if (intent != null) {
-            Log.e("zzz", "22");
+            Log.e("zzz2", "2");
             Intent loadingPageIntent = new Intent(context, LoadingActivity.class);
             loadingPageIntent.putExtra(PKG_NAME_ARGUMENT, packageName);
             loadingPageIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
