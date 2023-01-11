@@ -181,15 +181,15 @@ public class HomeActivity extends VActivity implements HomeContract.HomeView {
         ItemTouchHelper touchHelper = new ItemTouchHelper(new LauncherTouchCallback());
         touchHelper.attachToRecyclerView(mLauncherView);
         mLaunchpadAdapter.setAppClickListener((pos, data) -> {
-            Log.e("zzz", "xxx2");
+            Log.e("zzz", "2");
             if (!data.isLoading()) {
                 if (data instanceof AddAppButton) {
-                    Log.e("zzz", "xxx3");
+                    Log.e("zzz", "3");
                     onAddAppButtonClick();
                 }
-                Log.e("zzz", "xxx4");
+                Log.e("zzz", "4");
                 mLaunchpadAdapter.notifyItemChanged(pos);
-                Log.e("zzz", "xxx5");
+                Log.e("zzz", "5");
                 mPresenter.launchApp(data);
             }
         });

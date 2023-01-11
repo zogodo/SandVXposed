@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.util.Log;
 import android.util.SparseArray;
 
 import com.lody.virtual.client.core.VirtualCore;
@@ -267,6 +268,7 @@ import static android.content.pm.ActivityInfo.LAUNCH_SINGLE_TOP;
 
     int startActivityLocked(int userId, Intent intent, ActivityInfo info, IBinder resultTo, Bundle options,
                             String resultWho, int requestCode) {
+        Log.e("zzz", "51");
         optimizeTasksLocked();
 
         Intent destIntent;

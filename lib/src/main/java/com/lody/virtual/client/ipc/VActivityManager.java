@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.IInterface;
 import android.os.RemoteException;
+import android.util.Log;
 
 import com.lody.virtual.client.core.VirtualCore;
 import com.lody.virtual.client.env.VirtualRuntime;
@@ -54,9 +55,12 @@ public class VActivityManager {
 
 
     public int startActivity(Intent intent, ActivityInfo info, IBinder resultTo, Bundle options, String resultWho, int requestCode, int userId) {
+        Log.e("zzz", "411");
         try {
+            Log.e("zzz", "412");
             return getService().startActivity(intent, info, resultTo, options, resultWho, requestCode, userId);
         } catch (RemoteException e) {
+            Log.e("zzz", "413");
             return VirtualRuntime.crash(e);
         }
     }
@@ -70,6 +74,7 @@ public class VActivityManager {
     }
 
     public int startActivity(Intent intent, int userId) {
+        Log.e("zzz", "421");
         if (userId < 0) {
             return ActivityManagerCompat.START_NOT_CURRENT_USER_ACTIVITY;
         }

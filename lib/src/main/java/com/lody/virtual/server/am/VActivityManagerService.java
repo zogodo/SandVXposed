@@ -27,6 +27,7 @@ import android.os.Parcel;
 import android.os.Process;
 import android.os.RemoteException;
 import android.os.SystemClock;
+import android.util.Log;
 
 import com.lody.virtual.client.IVClient;
 import com.lody.virtual.client.core.VirtualCore;
@@ -129,6 +130,7 @@ public class VActivityManagerService implements IActivityManager {
 
     @Override
     public int startActivity(Intent intent, ActivityInfo info, IBinder resultTo, Bundle options, String resultWho, int requestCode, int userId) {
+        Log.e("zzz4 3", "xxx1");
         synchronized (this) {
             return mMainStack.startActivityLocked(userId, intent, info, resultTo, options, resultWho, requestCode);
         }

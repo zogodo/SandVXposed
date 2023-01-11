@@ -58,25 +58,25 @@ class HomePresenterImpl implements HomeContract.HomePresenter {
 
     @Override
     public void launchApp(AppData data) {
-        Log.e("zzz1", "xxx1");
+        Log.e("zzz", "11");
         try {
-            Log.e("zzz1", "xxx2");
+            Log.e("zzz", "12");
             if (data instanceof PackageAppData) {
-                Log.e("zzz1", "xxx3");
+                Log.e("zzz", "13");
                 PackageAppData appData = (PackageAppData) data;
                 appData.isFirstOpen = false;
                 Log.e("zzz1", "mActivity " + mActivity.toString());
                 Log.e("zzz1", "packageName " + appData.packageName);
                 LoadingActivity.launch(mActivity, appData.packageName, 0);
             } else if (data instanceof MultiplePackageAppData) {
-                Log.e("zzz1", "xxx4");
+                Log.e("zzz", "14");
                 MultiplePackageAppData multipleData = (MultiplePackageAppData) data;
                 multipleData.isFirstOpen = false;
                 LoadingActivity.launch(mActivity, multipleData.appInfo.packageName, ((MultiplePackageAppData) data).userId);
             }
-            Log.e("zzz1", "xxx5");
+            Log.e("zzz", "15");
         } catch (Throwable e) {
-            Log.e("zzz1", "xxx6");
+            Log.e("zzz", "16");
             e.printStackTrace();
         }
     }

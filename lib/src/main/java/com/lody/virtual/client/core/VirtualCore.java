@@ -385,7 +385,7 @@ public final class VirtualCore {
     }
 
     public Intent getLaunchIntent(String packageName, int userId) {
-        Log.e("zzz3", "xxx1");
+        Log.e("zzz", "31");
         VPackageManager pm = VPackageManager.get();
         Intent intentToResolve = new Intent(Intent.ACTION_MAIN);
         intentToResolve.addCategory(Intent.CATEGORY_INFO);
@@ -395,18 +395,21 @@ public final class VirtualCore {
         // Otherwise, try to find a main launcher activity.
         if (ris == null || ris.size() <= 0) {
             // reuse the intent instance
+            Log.e("zzz", "32");
             intentToResolve.removeCategory(Intent.CATEGORY_INFO);
             intentToResolve.addCategory(Intent.CATEGORY_LAUNCHER);
             intentToResolve.setPackage(packageName);
             ris = pm.queryIntentActivities(intentToResolve, intentToResolve.resolveType(context), 0, userId);
         }
         if (ris == null || ris.size() <= 0) {
+            Log.e("zzz", "33");
             return null;
         }
         Intent intent = new Intent(intentToResolve);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setClassName(ris.get(0).activityInfo.packageName,
                 ris.get(0).activityInfo.name);
+        Log.e("zzz", "34");
         return intent;
     }
 
