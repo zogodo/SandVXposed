@@ -17,6 +17,7 @@ import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.View;
@@ -180,11 +181,15 @@ public class HomeActivity extends VActivity implements HomeContract.HomeView {
         ItemTouchHelper touchHelper = new ItemTouchHelper(new LauncherTouchCallback());
         touchHelper.attachToRecyclerView(mLauncherView);
         mLaunchpadAdapter.setAppClickListener((pos, data) -> {
+            Log.e("zzz", "xxx2");
             if (!data.isLoading()) {
                 if (data instanceof AddAppButton) {
+                    Log.e("zzz", "xxx3");
                     onAddAppButtonClick();
                 }
+                Log.e("zzz", "xxx4");
                 mLaunchpadAdapter.notifyItemChanged(pos);
+                Log.e("zzz", "xxx5");
                 mPresenter.launchApp(data);
             }
         });

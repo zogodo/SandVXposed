@@ -1,6 +1,7 @@
 package io.virtualapp.splash;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.WindowManager;
 
 import com.lody.virtual.client.core.VirtualCore;
@@ -20,6 +21,7 @@ public class SplashActivity extends VActivity {
     protected void onCreate(Bundle savedInstanceState) {
         @SuppressWarnings("unused")
         boolean enterGuide = !Once.beenDone(Once.THIS_APP_INSTALL, VCommends.TAG_NEW_VERSION);
+        Log.e("zzz", "xxx");
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState);

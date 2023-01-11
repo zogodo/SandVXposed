@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -32,8 +33,10 @@ public class LoadingActivity extends VActivity {
     private EatBeansView loadingView;
 
     public static void launch(Context context, String packageName, int userId) {
+        Log.e("zzz2", "xxx1");
         Intent intent = VirtualCore.get().getLaunchIntent(packageName, userId);
         if (intent != null) {
+            Log.e("zzz2", "xxx2");
             Intent loadingPageIntent = new Intent(context, LoadingActivity.class);
             loadingPageIntent.putExtra(PKG_NAME_ARGUMENT, packageName);
             loadingPageIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

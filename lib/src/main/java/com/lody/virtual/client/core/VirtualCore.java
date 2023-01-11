@@ -20,6 +20,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Process;
 import android.os.RemoteException;
+import android.util.Log;
 
 import com.lody.virtual.R;
 import com.lody.virtual.client.VClientImpl;
@@ -384,6 +385,7 @@ public final class VirtualCore {
     }
 
     public Intent getLaunchIntent(String packageName, int userId) {
+        Log.e("zzz3", "xxx1");
         VPackageManager pm = VPackageManager.get();
         Intent intentToResolve = new Intent(Intent.ACTION_MAIN);
         intentToResolve.addCategory(Intent.CATEGORY_INFO);

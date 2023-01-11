@@ -2,6 +2,7 @@ package io.virtualapp.home;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.lody.virtual.GmsSupport;
@@ -57,17 +58,25 @@ class HomePresenterImpl implements HomeContract.HomePresenter {
 
     @Override
     public void launchApp(AppData data) {
+        Log.e("zzz1", "xxx1");
         try {
+            Log.e("zzz1", "xxx2");
             if (data instanceof PackageAppData) {
+                Log.e("zzz1", "xxx3");
                 PackageAppData appData = (PackageAppData) data;
                 appData.isFirstOpen = false;
+                Log.e("zzz1", "mActivity " + mActivity.toString());
+                Log.e("zzz1", "packageName " + appData.packageName);
                 LoadingActivity.launch(mActivity, appData.packageName, 0);
             } else if (data instanceof MultiplePackageAppData) {
+                Log.e("zzz1", "xxx4");
                 MultiplePackageAppData multipleData = (MultiplePackageAppData) data;
                 multipleData.isFirstOpen = false;
                 LoadingActivity.launch(mActivity, multipleData.appInfo.packageName, ((MultiplePackageAppData) data).userId);
             }
+            Log.e("zzz1", "xxx5");
         } catch (Throwable e) {
+            Log.e("zzz1", "xxx6");
             e.printStackTrace();
         }
     }

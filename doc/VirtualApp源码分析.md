@@ -1,8 +1,8 @@
 最近发现了一个非常好的开源项目，基本实现了一个 Android 上的沙箱环境，不过应用场景最多的还是应用双开。
 
-[VA github]: https://github.com/asLody/VirtualApp
+【VA github】: https://github.com/asLody/VirtualApp
 
-[VA 的源码注释]: https://github.com/ganyao114/VA_Doc
+【VA 的源码注释】: https://github.com/ganyao114/VA_Doc
 
 第一章主要是分析一下项目的整体结构。
 
@@ -18,27 +18,27 @@
 
 这里就是框架的主体代码了
 
-### client
+## com.lody.virtual.client
 
 运行在客户端的代码，指加载到 VA 中的子程序在被 VA 代理(hook)之后, 所运行的代码
 
-#### hook
+## com.lody.virtual.client.hook
 
 hook java 层函数的一些代码
 
-#### ipc
+## com.lody.virtual.client.ipc
 
 伪造的一些 framework 层的 IPC 服务类，诸如 ActivityManager, ServiceManager 等等，使用 VXXXXX 命名。hook 之后，子程序就会运行到这里而·不是原来真正的系统 framework 代码。
 
-#### stub
+## com.lody.virtual.client.stub
 
 系统四大组件的插桩，如提前注册在 Menifest 里的几十个 StubActivity。
 
-### remote
+## com.lody.virtual.remote
 
 一些可序列化 Model，继承于 Parcelable
 
-### server
+## com.lody.virtual.server
 
 server 端代码，VA 伪造了一套 framework 层系统 service 的代码，他在一个独立的服务中记录管理组件的各种 Recorder，其逻辑其实与系统原生的相近，通过 Binder 与 client 端的 ipc 包中的 VXXXXManager 通讯。诸如 AMS(VAMS), PMS(VPMS)。
 
@@ -50,7 +50,7 @@ server 端代码，VA 伪造了一套 framework 层系统 service 的代码，�
 
 ## Mirror framework 层镜像
 
-### 成员变量 Field 映射
+## 成员变量 Field 映射
 
 根据成员变量类型，映射类型分为几个基本数据类型和对象引用类型。下面就以对象引用类型为例，其他类型类似。
 
@@ -131,7 +131,7 @@ public static Class load(Class mappingClass, Class<?> realClass) {
 
 最后调用的话 MirrorClass.mirrorField.get(instance), MirrorClass.mirrorField.set(instance), 就相当于直接调用 framework 层的隐藏字段了。
 
-### Method 映射
+## Method 映射
 
 其实与 Field 类似，只是 Field 主要是一个 call 即调用方法。
 
@@ -265,7 +265,7 @@ protected void onBindMethods() {
 
 # 3  运行时结构
 
-这点很重要，VA 在运行时并不是一个简单的单进程的库，其需要在系统调用到其预先注册的 Stub 组件之后接手系统代理 Client App 的 四大组件，包括生命周期等一切事物。
+这点很重要，VA 在运行时并不是一个简单的单进程的库，其需要在系统调用到其预先注册的 Stub 组件之后接手系统代理 Client App 的四大组件，包括生命周期等一切事物。
 VA 参照原生系统 framework 仿造了一套 framework service，还有配套在 client 端的 framework 库。
 
 1. 首先来看一下系统原生的 framework 运作方式
@@ -761,7 +761,7 @@ ServicecFetcher 自身的 IBnder 则通过 BinderProvicer 这个ContentProvider 
 
 我们先看启动 Activity 的情况:
 
-### Hook startActivity(重定位 Intent 到 StubActivity)
+## Hook startActivity(重定位 Intent 到 StubActivity)
 
 首先在 Client App 中，startActivity 方法必须被 Hook 掉，不然 Client App 调用 startActivity 就直指外部 Activity 去了。
 
@@ -773,249 +773,249 @@ Hook 的方法就是用我们动态代理生成的代理类对象替换系统原
 
 ```java
 @Override
-    public void inject() throws Throwable {
-        if (BuildCompat.isOreo()) {
-            //Android Oreo(8.X)
-            Object singleton = ActivityManagerOreo.IActivityManagerSingleton.get();
-            Singleton.mInstance.set(singleton, getInvocationStub().getProxyInterface());
-        } else {
-            if (ActivityManagerNative.gDefault.type() == IActivityManager.TYPE) {
-                ActivityManagerNative.gDefault.set(getInvocationStub().getProxyInterface());
-            } else if (ActivityManagerNative.gDefault.type() == Singleton.TYPE) {
-                Object gDefault = ActivityManagerNative.gDefault.get();
-                Singleton.mInstance.set(gDefault, getInvocationStub().getProxyInterface());
-            }
+public void inject() throws Throwable {
+    if (BuildCompat.isOreo()) {
+        //Android Oreo(8.X)
+        Object singleton = ActivityManagerOreo.IActivityManagerSingleton.get();
+        Singleton.mInstance.set(singleton, getInvocationStub().getProxyInterface());
+    } else {
+        if (ActivityManagerNative.gDefault.type() == IActivityManager.TYPE) {
+            ActivityManagerNative.gDefault.set(getInvocationStub().getProxyInterface());
+        } else if (ActivityManagerNative.gDefault.type() == Singleton.TYPE) {
+            Object gDefault = ActivityManagerNative.gDefault.get();
+            Singleton.mInstance.set(gDefault, getInvocationStub().getProxyInterface());
         }
-        BinderInvocationStub hookAMBinder = new BinderInvocationStub(getInvocationStub().getBaseInterface());
-        hookAMBinder.copyMethodProxies(getInvocationStub());
-        ServiceManager.sCache.get().put(Context.ACTIVITY_SERVICE, hookAMBinder);
     }
+    BinderInvocationStub hookAMBinder = new BinderInvocationStub(getInvocationStub().getBaseInterface());
+    hookAMBinder.copyMethodProxies(getInvocationStub());
+    ServiceManager.sCache.get().put(Context.ACTIVITY_SERVICE, hookAMBinder);
+}
 ```
 
 好了，下面只要调用到 startActivity 就会被 Hook 到 call。
 这个函数需要注意以下几点：
+
 1. VA 有意将安装和卸载 APP 的请求重定向到了卸载 VA 内部 APK 的逻辑。
 2. resolveActivityInfo 调用到了 VPM 的 resolveIntent，最终会远程调用到 VPMS 的 resolveIntent，然后 VPMS 就会去查询 VPackage 找到目标 Activity 并将信息附加在 ResolveInfo 中返回 VPM。
 3. 最后也是最重要的一点，startActivity 会调用到 VAM.startActivity, 同样最终会远程调用到 VAMS 的 startActivity。
 
 ```java
 // Hook startActivity
-    static class StartActivity extends MethodProxy {
+static class StartActivity extends MethodProxy {
 
-        private static final String SCHEME_FILE = "file";
-        private static final String SCHEME_PACKAGE = "package";
+    private static final String SCHEME_FILE = "file";
+    private static final String SCHEME_PACKAGE = "package";
 
-        @Override
-        public String getMethodName() {
-            return "startActivity";
+    @Override
+    public String getMethodName() {
+        return "startActivity";
+    }
+
+    @Override
+    public Object call(Object who, Method method, Object... args) throws Throwable {
+        int intentIndex = ArrayUtils.indexOfObject(args, Intent.class, 1);
+        if (intentIndex < 0) {
+            return ActivityManagerCompat.START_INTENT_NOT_RESOLVED;
+        }
+        int resultToIndex = ArrayUtils.indexOfObject(args, IBinder.class, 2);
+        String resolvedType = (String) args[intentIndex + 1];
+        Intent intent = (Intent) args[intentIndex];
+        intent.setDataAndType(intent.getData(), resolvedType);
+        IBinder resultTo = resultToIndex >= 0 ? (IBinder) args[resultToIndex] : null;
+        int userId = VUserHandle.myUserId();
+
+        if (ComponentUtils.isStubComponent(intent)) {
+            return method.invoke(who, args);
         }
 
-        @Override
-        public Object call(Object who, Method method, Object... args) throws Throwable {
-            int intentIndex = ArrayUtils.indexOfObject(args, Intent.class, 1);
-            if (intentIndex < 0) {
+        // 请求安装和卸载界面        if (Intent.ACTION_INSTALL_PACKAGE.equals(intent.getAction())
+            || (Intent.ACTION_VIEW.equals(intent.getAction())
+                && "application/vnd.android.package-archive".equals(intent.getType()))) {
+            if (handleInstallRequest(intent)) {
+                return 0;
+            }
+        } else if ((Intent.ACTION_UNINSTALL_PACKAGE.equals(intent.getAction())
+                    || Intent.ACTION_DELETE.equals(intent.getAction()))
+                   && "package".equals(intent.getScheme())) {
+
+            if (handleUninstallRequest(intent)) {
+                return 0;
+            }
+        }
+
+        String resultWho = null;
+        int requestCode = 0;
+        Bundle options = ArrayUtils.getFirst(args, Bundle.class);
+        if (resultTo != null) {
+            resultWho = (String) args[resultToIndex + 1];
+            requestCode = (int) args[resultToIndex + 2];
+        }
+        // chooser 调用选择界面
+        if (ChooserActivity.check(intent)) {
+            intent.setComponent(new ComponentName(getHostContext(), ChooserActivity.class));
+            intent.putExtra(Constants.EXTRA_USER_HANDLE, userId);
+            intent.putExtra(ChooserActivity.EXTRA_DATA, options);
+            intent.putExtra(ChooserActivity.EXTRA_WHO, resultWho);
+            intent.putExtra(ChooserActivity.EXTRA_REQUEST_CODE, requestCode);
+            return method.invoke(who, args);
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            args[intentIndex - 1] = getHostPkg();
+        }
+
+        //解析 ActivityInfo
+        ActivityInfo activityInfo = VirtualCore.get().resolveActivityInfo(intent, userId);
+        if (activityInfo == null) {
+            VLog.e("VActivityManager", "Unable to resolve activityInfo : " + intent);
+            if (intent.getPackage() != null && isAppPkg(intent.getPackage())) {
                 return ActivityManagerCompat.START_INTENT_NOT_RESOLVED;
             }
-            int resultToIndex = ArrayUtils.indexOfObject(args, IBinder.class, 2);
-            String resolvedType = (String) args[intentIndex + 1];
-            Intent intent = (Intent) args[intentIndex];
-            intent.setDataAndType(intent.getData(), resolvedType);
-            IBinder resultTo = resultToIndex >= 0 ? (IBinder) args[resultToIndex] : null;
-            int userId = VUserHandle.myUserId();
-
-            if (ComponentUtils.isStubComponent(intent)) {
-                return method.invoke(who, args);
-            }
-
-            // 请求安装和卸载界面
-            if (Intent.ACTION_INSTALL_PACKAGE.equals(intent.getAction())
-                    || (Intent.ACTION_VIEW.equals(intent.getAction())
-                    && "application/vnd.android.package-archive".equals(intent.getType()))) {
-                if (handleInstallRequest(intent)) {
-                    return 0;
-                }
-            } else if ((Intent.ACTION_UNINSTALL_PACKAGE.equals(intent.getAction())
-                    || Intent.ACTION_DELETE.equals(intent.getAction()))
-                    && "package".equals(intent.getScheme())) {
-
-                if (handleUninstallRequest(intent)) {
-                    return 0;
-                }
-            }
-
-            String resultWho = null;
-            int requestCode = 0;
-            Bundle options = ArrayUtils.getFirst(args, Bundle.class);
-            if (resultTo != null) {
-                resultWho = (String) args[resultToIndex + 1];
-                requestCode = (int) args[resultToIndex + 2];
-            }
-            // chooser 调用选择界面
-            if (ChooserActivity.check(intent)) {
-                intent.setComponent(new ComponentName(getHostContext(), ChooserActivity.class));
-                intent.putExtra(Constants.EXTRA_USER_HANDLE, userId);
-                intent.putExtra(ChooserActivity.EXTRA_DATA, options);
-                intent.putExtra(ChooserActivity.EXTRA_WHO, resultWho);
-                intent.putExtra(ChooserActivity.EXTRA_REQUEST_CODE, requestCode);
-                return method.invoke(who, args);
-            }
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                args[intentIndex - 1] = getHostPkg();
-            }
-
-            //解析 ActivityInfo
-            ActivityInfo activityInfo = VirtualCore.get().resolveActivityInfo(intent, userId);
-            if (activityInfo == null) {
-                VLog.e("VActivityManager", "Unable to resolve activityInfo : " + intent);
-                if (intent.getPackage() != null && isAppPkg(intent.getPackage())) {
-                    return ActivityManagerCompat.START_INTENT_NOT_RESOLVED;
-                }
-                return method.invoke(who, args);
-            }
-
-            // 调用远程 VAMS.startActivity
-            int res = VActivityManager.get().startActivity(intent, activityInfo, resultTo, options, resultWho, requestCode, VUserHandle.myUserId());
-            if (res != 0 && resultTo != null && requestCode > 0) {
-                VActivityManager.get().sendActivityResult(resultTo, resultWho, requestCode);
-            }
-
-            // 处理 Activity 切换动画，因为此时动画还是 Host 的 Stub Activity 默认动画，需要覆盖成子程序包的动画
-            if (resultTo != null) {
-                ActivityClientRecord r = VActivityManager.get().getActivityRecord(resultTo);
-                if (r != null && r.activity != null) {
-                    try {
-                        TypedValue out = new TypedValue();
-                        Resources.Theme theme = r.activity.getResources().newTheme();
-                        theme.applyStyle(activityInfo.getThemeResource(), true);
-                        if (theme.resolveAttribute(android.R.attr.windowAnimationStyle, out, true)) {
-
-                            TypedArray array = theme.obtainStyledAttributes(out.data,
-                                    new int[]{
-                                            android.R.attr.activityOpenEnterAnimation,
-                                            android.R.attr.activityOpenExitAnimation
-                                    });
-
-                            r.activity.overridePendingTransition(array.getResourceId(0, 0), array.getResourceId(1, 0));
-                            array.recycle();
-                        }
-                    } catch (Throwable e) {
-                        // Ignore
-                    }
-                }
-            }
-            return res;
+            return method.invoke(who, args);
         }
 
-
-        private boolean handleInstallRequest(Intent intent) {
-            IAppRequestListener listener = VirtualCore.get().getAppRequestListener();
-            if (listener != null) {
-                Uri packageUri = intent.getData();
-                if (SCHEME_FILE.equals(packageUri.getScheme())) {
-                    File sourceFile = new File(packageUri.getPath());
-                    try {
-                        listener.onRequestInstall(sourceFile.getPath());
-                        return true;
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-            }
-            return false;
+        // 调用远程 VAMS.startActivity
+        int res = VActivityManager.get().startActivity(intent, activityInfo, resultTo, options, resultWho, requestCode, VUserHandle.myUserId());
+        if (res != 0 && resultTo != null && requestCode > 0) {
+            VActivityManager.get().sendActivityResult(resultTo, resultWho, requestCode);
         }
 
-        private boolean handleUninstallRequest(Intent intent) {
-            IAppRequestListener listener = VirtualCore.get().getAppRequestListener();
-            if (listener != null) {
-                Uri packageUri = intent.getData();
-                if (SCHEME_PACKAGE.equals(packageUri.getScheme())) {
-                    String pkg = packageUri.getSchemeSpecificPart();
-                    try {
-                        listener.onRequestUninstall(pkg);
-                        return true;
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
+        // 处理 Activity 切换动画，因为此时动画还是 Host 的 Stub Activity 默认动画，需要覆盖成子程序包的动画
+        if (resultTo != null) {
+            ActivityClientRecord r = VActivityManager.get().getActivityRecord(resultTo);
+            if (r != null && r.activity != null) {
+                try {
+                    TypedValue out = new TypedValue();
+                    Resources.Theme theme = r.activity.getResources().newTheme();
+                    theme.applyStyle(activityInfo.getThemeResource(), true);
+                    if (theme.resolveAttribute(android.R.attr.windowAnimationStyle, out, true)) {
+
+                        TypedArray array = theme.obtainStyledAttributes(out.data,
+                                                                        new int[]{
+                                                                            android.R.attr.activityOpenEnterAnimation,
+                                                                            android.R.attr.activityOpenExitAnimation
+                                                                        });
+
+                        r.activity.overridePendingTransition(array.getResourceId(0, 0), array.getResourceId(1, 0));
+                        array.recycle();
                     }
+                } catch (Throwable e) {
+                    // Ignore
                 }
-
             }
-            return false;
         }
-
+        return res;
     }
+
+
+    private boolean handleInstallRequest(Intent intent) {
+        IAppRequestListener listener = VirtualCore.get().getAppRequestListener();
+        if (listener != null) {
+            Uri packageUri = intent.getData();
+            if (SCHEME_FILE.equals(packageUri.getScheme())) {
+                File sourceFile = new File(packageUri.getPath());
+                try {
+                    listener.onRequestInstall(sourceFile.getPath());
+                    return true;
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+        return false;
+    }
+
+    private boolean handleUninstallRequest(Intent intent) {
+        IAppRequestListener listener = VirtualCore.get().getAppRequestListener();
+        if (listener != null) {
+            Uri packageUri = intent.getData();
+            if (SCHEME_PACKAGE.equals(packageUri.getScheme())) {
+                String pkg = packageUri.getSchemeSpecificPart();
+                try {
+                    listener.onRequestUninstall(pkg);
+                    return true;
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+        return false;
+    }
+
+}
 ```
 
 逻辑最终走到 VAMS 后，VAMS 调用 ActivityStack.startActivityLocked
 
 ```java
-    // 参考 framework 的实现
-    int startActivityLocked(int userId, Intent intent, ActivityInfo info, IBinder resultTo, Bundle options,
-                            String resultWho, int requestCode) {
-        optimizeTasksLocked();
+// 参考 framework 的实现
+int startActivityLocked(int userId, Intent intent, ActivityInfo info, IBinder resultTo, Bundle options,
+                        String resultWho, int requestCode) {
+    optimizeTasksLocked();
 
-        Intent destIntent;
-        ActivityRecord sourceRecord = findActivityByToken(userId, resultTo);
-        TaskRecord sourceTask = sourceRecord != null ? sourceRecord.task : null;
+    Intent destIntent;
+    ActivityRecord sourceRecord = findActivityByToken(userId, resultTo);
+    TaskRecord sourceTask = sourceRecord != null ? sourceRecord.task : null;
 
-        // 忽略一大堆对 Flag 的处理
-        .............................
+    // 忽略一大堆对 Flag 的处理
+    .............................
 
         String affinity = ComponentUtils.getTaskAffinity(info);
 
-        // 根据 Flag 寻找合适的 Task
-        TaskRecord reuseTask = null;
-        switch (reuseTarget) {
-            case AFFINITY:
-                reuseTask = findTaskByAffinityLocked(userId, affinity);
-                break;
-            case DOCUMENT:
-                reuseTask = findTaskByIntentLocked(userId, intent);
-                break;
-            case CURRENT:
-                reuseTask = sourceTask;
-                break;
-            default:
-                break;
-        }
-
-        boolean taskMarked = false;
-        if (reuseTask == null) {
-            startActivityInNewTaskLocked(userId, intent, info, options);
-        } else {
-            boolean delivered = false;
-            mAM.moveTaskToFront(reuseTask.taskId, 0);
-            boolean startTaskToFront = !clearTask && !clearTop && ComponentUtils.isSameIntent(intent, reuseTask.taskRoot);
-
-            if (clearTarget.deliverIntent || singleTop) {
-                taskMarked = markTaskByClearTarget(reuseTask, clearTarget, intent.getComponent());
-                ActivityRecord topRecord = topActivityInTask(reuseTask);
-                if (clearTop && !singleTop && topRecord != null && taskMarked) {
-                    topRecord.marked = true;
-                }
-                // Target activity is on top
-                if (topRecord != null && !topRecord.marked && topRecord.component.equals(intent.getComponent())) {
-                    deliverNewIntentLocked(sourceRecord, topRecord, intent);
-                    delivered = true;
-                }
-            }
-            if (taskMarked) {
-                synchronized (mHistory) {
-                    scheduleFinishMarkedActivityLocked();
-                }
-            }
-            if (!startTaskToFront) {
-                if (!delivered) {
-                    destIntent = startActivityProcess(userId, sourceRecord, intent, info);
-                    if (destIntent != null) {
-                        startActivityFromSourceTask(reuseTask, destIntent, info, resultWho, requestCode, options);
-                    }
-                }
-            }
-        }
-        return 0;
+    // 根据 Flag 寻找合适的 Task
+    TaskRecord reuseTask = null;
+    switch (reuseTarget) {
+        case AFFINITY:
+            reuseTask = findTaskByAffinityLocked(userId, affinity);
+            break;
+        case DOCUMENT:
+            reuseTask = findTaskByIntentLocked(userId, intent);
+            break;
+        case CURRENT:
+            reuseTask = sourceTask;
+            break;
+        default:
+            break;
     }
+
+    boolean taskMarked = false;
+    if (reuseTask == null) {
+        startActivityInNewTaskLocked(userId, intent, info, options);
+    } else {
+        boolean delivered = false;
+        mAM.moveTaskToFront(reuseTask.taskId, 0);
+        boolean startTaskToFront = !clearTask && !clearTop && ComponentUtils.isSameIntent(intent, reuseTask.taskRoot);
+
+        if (clearTarget.deliverIntent || singleTop) {
+            taskMarked = markTaskByClearTarget(reuseTask, clearTarget, intent.getComponent());
+            ActivityRecord topRecord = topActivityInTask(reuseTask);
+            if (clearTop && !singleTop && topRecord != null && taskMarked) {
+                topRecord.marked = true;
+            }
+            // Target activity is on top
+            if (topRecord != null && !topRecord.marked && topRecord.component.equals(intent.getComponent())) {
+                deliverNewIntentLocked(sourceRecord, topRecord, intent);
+                delivered = true;
+            }
+        }
+        if (taskMarked) {
+            synchronized (mHistory) {
+                scheduleFinishMarkedActivityLocked();
+            }
+        }
+        if (!startTaskToFront) {
+            if (!delivered) {
+                destIntent = startActivityProcess(userId, sourceRecord, intent, info);
+                if (destIntent != null) {
+                    startActivityFromSourceTask(reuseTask, destIntent, info, resultWho, requestCode, options);
+                }
+            }
+        }
+    }
+    return 0;
+}
 ```
 
 然后 call 到了 startActivityProcess ，这就是真正替换 Intent 的地方:
@@ -1155,7 +1155,7 @@ public class StubActivityRecord  {
 }
 ```
 
-#### 初始化 Application
+## 初始化 Application
 
 还有一个非常重要的事情，注意到这一行：
 
@@ -1224,7 +1224,7 @@ Client App 的 IBinder 句柄(VClientImpl.asBinder) 被打包在了 Bundle 中�
                 (Object[]) args);
 ```
 
-### 恢复原 Intent 重定向到原 Activity
+## 恢复原 Intent 重定向到原 Activity
 
 当 AMS 收到伪装的 Intent 后，就会找到 StubActivity，这时流程回到 VA 里的主线程中的消息队列中。
 
